@@ -1,0 +1,50 @@
+{
+  "name": "n8n-nodes-toneapi",
+  "version": "0.1.0",
+  "description": "n8n community node for the Tone API — analyze tone, detect emotions, and rewrite text.",
+  "keywords": [
+    "n8n-community-node-package",
+    "tone",
+    "sentiment",
+    "emotion",
+    "text-analysis",
+    "rewrite"
+  ],
+  "license": "MIT",
+  "homepage": "https://toneapi.bracherai.com",
+  "author": {
+    "name": "Noah Bracher"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Turtle-dev3/n8n-nodes-toneapi.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "lint": "tslint -p tsconfig.json -c tslint.json",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/ToneApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/ToneApi/ToneApi.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "gulp": "^4.0.2",
+    "n8n-workflow": "~1.0.0",
+    "typescript": "~5.4.0"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}

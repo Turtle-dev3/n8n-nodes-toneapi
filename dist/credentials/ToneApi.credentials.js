@@ -5,7 +5,7 @@ class ToneApi {
     constructor() {
         this.name = 'toneApi';
         this.displayName = 'Tone API';
-        this.documentationUrl = 'https://toneapi.bracherai.com/docs';
+        this.documentationUrl = 'https://dashboard.bracherai.com/docs';
         this.properties = [
             {
                 displayName: 'API Key',

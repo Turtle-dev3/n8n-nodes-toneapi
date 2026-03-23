@@ -7,7 +7,7 @@ import {
 export class ToneApi implements ICredentialType {
 	name = 'toneApi';
 	displayName = 'Tone API';
-	documentationUrl = 'https://toneapi.bracherai.com/docs';
+	documentationUrl = 'https://dashboard.bracherai.com/docs';
 
 	properties: INodeProperties[] = [
 		{

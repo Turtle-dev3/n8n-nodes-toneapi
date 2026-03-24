@@ -51,6 +51,12 @@ export class ToneApi implements INodeType {
 						action: 'Detect emotion in text',
 					},
 					{
+						name: 'Reply',
+						value: 'reply',
+						description: 'Generate a reply to a message with a specific role and tone (costs 3 credits)',
+						action: 'Generate reply to message',
+					},
+					{
 						name: 'Rewrite',
 						value: 'rewrite',
 						description: 'Rewrite text in a professional tone or a custom target tone',
@@ -133,6 +139,81 @@ export class ToneApi implements INodeType {
 					},
 				},
 			},
+			// Message — only for reply
+			{
+				displayName: 'Message',
+				name: 'message',
+				type: 'string',
+				typeOptions: {
+					rows: 4,
+				},
+				default: '',
+				required: true,
+				placeholder: 'Enter the message to reply to...',
+				description: 'The message you want to generate a reply for (max 10,000 characters)',
+				displayOptions: {
+					show: {
+						operation: ['reply'],
+					},
+				},
+			},
+			// Role — only for reply
+			{
+				displayName: 'Role',
+				name: 'role',
+				type: 'options',
+				options: [
+					{ name: 'Support', value: 'support' },
+					{ name: 'Sales', value: 'sales' },
+					{ name: 'HR', value: 'hr' },
+					{ name: 'Executive', value: 'executive' },
+					{ name: 'Community', value: 'community' },
+				],
+				default: 'support',
+				description: 'The role/persona to use when generating the reply',
+				displayOptions: {
+					show: {
+						operation: ['reply'],
+					},
+				},
+			},
+			// Tone — only for reply
+			{
+				displayName: 'Tone',
+				name: 'replyTone',
+				type: 'options',
+				options: [
+					{ name: 'Professional', value: 'professional' },
+					{ name: 'Empathetic', value: 'empathetic' },
+					{ name: 'Friendly', value: 'friendly' },
+					{ name: 'Assertive', value: 'assertive' },
+					{ name: 'Casual', value: 'casual' },
+				],
+				default: 'professional',
+				description: 'The tone to use in the reply',
+				displayOptions: {
+					show: {
+						operation: ['reply'],
+					},
+				},
+			},
+			// Context — only for reply (optional)
+			{
+				displayName: 'Context',
+				name: 'context',
+				type: 'string',
+				typeOptions: {
+					rows: 2,
+				},
+				default: '',
+				placeholder: 'e.g. Order #12345, customer has been waiting 2 weeks',
+				description: 'Optional context to help generate a more relevant reply',
+				displayOptions: {
+					show: {
+						operation: ['reply'],
+					},
+				},
+			},
 		],
 	};
 
@@ -199,6 +280,31 @@ export class ToneApi implements INodeType {
 						{
 							method: 'POST',
 							url: `${baseUrl}/rewrite`,
+							body,
+							json: true,
+						},
+					);
+				} else if (operation === 'reply') {
+					const message = this.getNodeParameter('message', i) as string;
+					const role = this.getNodeParameter('role', i) as string;
+					const replyTone = this.getNodeParameter('replyTone', i) as string;
+					const context = this.getNodeParameter('context', i) as string;
+
+					const body: { message: string; role: string; tone: string; context?: string } = {
+						message,
+						role,
+						tone: replyTone,
+					};
+					if (context) {
+						body.context = context;
+					}
+
+					responseData = await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'toneApi',
+						{
+							method: 'POST',
+							url: `${baseUrl}/reply`,
 							body,
 							json: true,
 						},

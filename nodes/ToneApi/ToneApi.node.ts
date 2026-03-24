@@ -39,6 +39,12 @@ export class ToneApi implements INodeType {
 						action: 'Analyze tone of text',
 					},
 					{
+						name: 'Compare Tone',
+						value: 'compare',
+						description: 'Compare the tone of two texts side by side (costs 3 credits)',
+						action: 'Compare tone of two texts',
+					},
+					{
 						name: 'Detect Emotion',
 						value: 'detectEmotion',
 						description: 'Detect the primary emotion and emotion scores in text',
@@ -77,6 +83,42 @@ export class ToneApi implements INodeType {
 					},
 				},
 			},
+			// Text A — only for compare
+			{
+				displayName: 'Text A',
+				name: 'textA',
+				type: 'string',
+				typeOptions: {
+					rows: 4,
+				},
+				default: '',
+				required: true,
+				placeholder: 'Enter the first text to compare...',
+				description: 'The first text to compare (max 10,000 characters)',
+				displayOptions: {
+					show: {
+						operation: ['compare'],
+					},
+				},
+			},
+			// Text B — only for compare
+			{
+				displayName: 'Text B',
+				name: 'textB',
+				type: 'string',
+				typeOptions: {
+					rows: 4,
+				},
+				default: '',
+				required: true,
+				placeholder: 'Enter the second text to compare...',
+				description: 'The second text to compare (max 10,000 characters)',
+				displayOptions: {
+					show: {
+						operation: ['compare'],
+					},
+				},
+			},
 			// Target tone — only for rewrite
 			{
 				displayName: 'Target Tone',
@@ -105,7 +147,20 @@ export class ToneApi implements INodeType {
 			try {
 				let responseData: object;
 
-				if (operation === 'analyze') {
+				if (operation === 'compare') {
+					const textA = this.getNodeParameter('textA', i) as string;
+					const textB = this.getNodeParameter('textB', i) as string;
+					responseData = await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'toneApi',
+						{
+							method: 'POST',
+							url: `${baseUrl}/compare`,
+							body: { text_a: textA, text_b: textB },
+							json: true,
+						},
+					);
+				} else if (operation === 'analyze') {
 					const text = this.getNodeParameter('text', i) as string;
 					responseData = await this.helpers.httpRequestWithAuthentication.call(
 						this,

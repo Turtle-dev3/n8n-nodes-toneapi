@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-toneapi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "n8n community node for the Tone API — analyze tone, detect emotions, and rewrite text.",
   "keywords": [
     "n8n-community-node-package",
@@ -27,7 +27,8 @@
     "prepublishOnly": "npm run build"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,

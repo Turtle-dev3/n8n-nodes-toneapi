@@ -24,7 +24,7 @@
     "build": "tsc && gulp build:icons",
     "dev": "tsc --watch",
     "lint": "tslint -p tsconfig.json -c tslint.json",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "echo 'Use GitHub Actions to publish'"
   },
   "files": [
     "dist",

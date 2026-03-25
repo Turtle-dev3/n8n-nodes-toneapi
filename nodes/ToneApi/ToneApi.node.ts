@@ -33,10 +33,22 @@ export class ToneApi implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
+						name: 'Adapt Text',
+						value: 'adapt',
+						description: 'Adapt text for a specific audience using a profile or preset (costs 2 credits)',
+						action: 'Adapt text for audience',
+					},
+					{
 						name: 'Analyze Tone',
 						value: 'analyze',
 						description: 'Analyze tone characteristics of text (rudeness, assertiveness, confidence, urgency, vagueness)',
 						action: 'Analyze tone of text',
+					},
+					{
+						name: 'Build Audience',
+						value: 'audience',
+						description: 'Build an audience profile from text and detected emotion',
+						action: 'Build audience profile',
 					},
 					{
 						name: 'Compare Tone',
@@ -214,6 +226,173 @@ export class ToneApi implements INodeType {
 					},
 				},
 			},
+			// Audience Text — for audience endpoint
+			{
+				displayName: 'Text',
+				name: 'audienceText',
+				type: 'string',
+				typeOptions: {
+					rows: 4,
+				},
+				default: '',
+				required: true,
+				placeholder: 'Enter the original message to build an audience profile from...',
+				description: 'The original text to analyze for audience profiling (max 10,000 characters)',
+				displayOptions: {
+					show: {
+						operation: ['audience'],
+					},
+				},
+			},
+			// Emotion — for audience endpoint
+			{
+				displayName: 'Emotion',
+				name: 'emotion',
+				type: 'string',
+				default: '',
+				required: true,
+				placeholder: 'e.g. frustrated, angry, anxious, joy',
+				description: 'The detected primary emotion (typically from Detect Emotion output)',
+				displayOptions: {
+					show: {
+						operation: ['audience'],
+					},
+				},
+			},
+			// Adapt Text — for adapt endpoint
+			{
+				displayName: 'Text',
+				name: 'adaptText',
+				type: 'string',
+				typeOptions: {
+					rows: 4,
+				},
+				default: '',
+				required: true,
+				placeholder: 'Enter the text to adapt...',
+				description: 'The text to adapt for the target audience (max 10,000 characters)',
+				displayOptions: {
+					show: {
+						operation: ['adapt'],
+					},
+				},
+			},
+			// Audience Mode — for adapt endpoint
+			{
+				displayName: 'Audience Mode',
+				name: 'audienceMode',
+				type: 'options',
+				options: [
+					{ name: 'Preset', value: 'preset' },
+					{ name: 'Custom String', value: 'string' },
+					{ name: 'Structured Profile', value: 'structured' },
+				],
+				default: 'preset',
+				description: 'How to specify the target audience',
+				displayOptions: {
+					show: {
+						operation: ['adapt'],
+					},
+				},
+			},
+			// Audience Preset — for adapt with preset mode
+			{
+				displayName: 'Audience Preset',
+				name: 'audiencePreset',
+				type: 'options',
+				options: [
+					{ name: 'Frustrated Customer', value: 'frustrated customer' },
+					{ name: 'Angry Customer', value: 'angry customer' },
+					{ name: 'Anxious Customer', value: 'anxious customer' },
+					{ name: 'Happy Customer', value: 'happy customer' },
+					{ name: 'C-Suite Executive', value: 'c-suite executive' },
+					{ name: 'New Hire', value: 'new hire' },
+				],
+				default: 'frustrated customer',
+				description: 'Select a built-in audience preset',
+				displayOptions: {
+					show: {
+						operation: ['adapt'],
+						audienceMode: ['preset'],
+					},
+				},
+			},
+			// Audience String — for adapt with string mode
+			{
+				displayName: 'Audience',
+				name: 'audienceString',
+				type: 'string',
+				default: '',
+				required: true,
+				placeholder: 'e.g. senior engineer, upset parent, new subscriber',
+				description: 'Describe the target audience in plain text',
+				displayOptions: {
+					show: {
+						operation: ['adapt'],
+						audienceMode: ['string'],
+					},
+				},
+			},
+			// Structured audience fields — for adapt with structured mode
+			{
+				displayName: 'Emotional State',
+				name: 'emotionalState',
+				type: 'string',
+				default: '',
+				required: true,
+				placeholder: 'e.g. frustrated, anxious, delighted',
+				description: 'The emotional state of the target audience',
+				displayOptions: {
+					show: {
+						operation: ['adapt'],
+						audienceMode: ['structured'],
+					},
+				},
+			},
+			{
+				displayName: 'Communication Needs',
+				name: 'communicationNeeds',
+				type: 'string',
+				default: '',
+				required: true,
+				placeholder: 'e.g. empathy, validation, clear next steps',
+				description: 'Comma-separated list of communication needs',
+				displayOptions: {
+					show: {
+						operation: ['adapt'],
+						audienceMode: ['structured'],
+					},
+				},
+			},
+			{
+				displayName: 'Tone Guidance',
+				name: 'toneGuidance',
+				type: 'string',
+				default: '',
+				required: true,
+				placeholder: 'e.g. warm but direct, acknowledge the problem before offering solutions',
+				description: 'Instructions for the ideal tone to use',
+				displayOptions: {
+					show: {
+						operation: ['adapt'],
+						audienceMode: ['structured'],
+					},
+				},
+			},
+			{
+				displayName: 'Avoid',
+				name: 'audienceAvoid',
+				type: 'string',
+				default: '',
+				placeholder: 'e.g. dismissive language, corporate jargon, deflection',
+				description: 'Comma-separated list of things to avoid (optional)',
+				displayOptions: {
+					show: {
+						operation: ['adapt'],
+						audienceMode: ['structured'],
+					},
+				},
+			},
 		],
 	};
 
@@ -228,7 +407,55 @@ export class ToneApi implements INodeType {
 			try {
 				let responseData: object;
 
-				if (operation === 'compare') {
+				if (operation === 'adapt') {
+					const text = this.getNodeParameter('adaptText', i) as string;
+					const audienceMode = this.getNodeParameter('audienceMode', i) as string;
+
+					let audience: string | object;
+					if (audienceMode === 'preset') {
+						audience = this.getNodeParameter('audiencePreset', i) as string;
+					} else if (audienceMode === 'string') {
+						audience = this.getNodeParameter('audienceString', i) as string;
+					} else {
+						const emotionalState = this.getNodeParameter('emotionalState', i) as string;
+						const communicationNeeds = (this.getNodeParameter('communicationNeeds', i) as string)
+							.split(',').map((s: string) => s.trim()).filter(Boolean);
+						const toneGuidance = this.getNodeParameter('toneGuidance', i) as string;
+						const avoidStr = this.getNodeParameter('audienceAvoid', i) as string;
+						const avoid = avoidStr ? avoidStr.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
+
+						audience = {
+							emotional_state: emotionalState,
+							communication_needs: communicationNeeds,
+							tone_guidance: toneGuidance,
+							avoid,
+						};
+					}
+
+					responseData = await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'toneApi',
+						{
+							method: 'POST',
+							url: `${baseUrl}/adapt`,
+							body: { text, audience },
+							json: true,
+						},
+					);
+				} else if (operation === 'audience') {
+					const text = this.getNodeParameter('audienceText', i) as string;
+					const emotion = this.getNodeParameter('emotion', i) as string;
+					responseData = await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'toneApi',
+						{
+							method: 'POST',
+							url: `${baseUrl}/audience`,
+							body: { text, emotion },
+							json: true,
+						},
+					);
+				} else if (operation === 'compare') {
 					const textA = this.getNodeParameter('textA', i) as string;
 					const textB = this.getNodeParameter('textB', i) as string;
 					responseData = await this.helpers.httpRequestWithAuthentication.call(

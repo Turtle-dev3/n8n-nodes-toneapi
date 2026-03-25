@@ -1,5 +1,6 @@
 import {
 	IAuthenticateGeneric,
+	ICredentialTestRequest,
 	ICredentialType,
 	INodeProperties,
 } from 'n8n-workflow';
@@ -27,6 +28,13 @@ export class ToneApi implements ICredentialType {
 			headers: {
 				Authorization: '=Bearer {{$credentials.apiKey}}',
 			},
+		},
+	};
+
+	test: ICredentialTestRequest = {
+		request: {
+			baseURL: 'https://toneapi.bracherai.com',
+			url: '/keys/me',
 		},
 	};
 }

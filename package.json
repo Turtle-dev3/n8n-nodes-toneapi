@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-toneapi",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "n8n community node for the Tone API — analyze tone, detect emotions, rewrite text, and adapt for audiences.",
   "keywords": [
     "n8n-community-node-package",
@@ -13,7 +13,8 @@
   "license": "MIT",
   "homepage": "https://toneapi.bracherai.com",
   "author": {
-    "name": "Noah Bracher"
+    "name": "Noah Bracher",
+    "email": "noahnyholmb@gmail.com"
   },
   "repository": {
     "type": "git",

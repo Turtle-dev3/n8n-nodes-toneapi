@@ -1,6 +1,5 @@
 {
   "name": "n8n-nodes-toneapi",
-<<<<<<< Updated upstream
   "version": "0.1.8",
   "description": "n8n community node for the Tone API — analyze tone, detect emotions, rewrite text, and adapt for audiences.",
   "keywords": [

@@ -3,7 +3,20 @@ import {
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
+	NodeOperationError,
 } from 'n8n-workflow';
+
+const MAX_TEXT_LENGTH = 10_000;
+
+function validateTextLength(text: string, fieldName: string, itemIndex: number, context: IExecuteFunctions): void {
+	if (text.length > MAX_TEXT_LENGTH) {
+		throw new NodeOperationError(
+			context.getNode(),
+			`${fieldName} exceeds maximum length of ${MAX_TEXT_LENGTH} characters (got ${text.length})`,
+			{ itemIndex },
+		);
+	}
+}
 
 export class ToneApi implements INodeType {
 	description: INodeTypeDescription = {
@@ -409,6 +422,7 @@ export class ToneApi implements INodeType {
 
 				if (operation === 'adapt') {
 					const text = this.getNodeParameter('adaptText', i) as string;
+					validateTextLength(text, 'Text', i, this);
 					const audienceMode = this.getNodeParameter('audienceMode', i) as string;
 
 					let audience: string | object;
@@ -444,6 +458,7 @@ export class ToneApi implements INodeType {
 					);
 				} else if (operation === 'audience') {
 					const text = this.getNodeParameter('audienceText', i) as string;
+					validateTextLength(text, 'Text', i, this);
 					const emotion = this.getNodeParameter('emotion', i) as string;
 					responseData = await this.helpers.httpRequestWithAuthentication.call(
 						this,
@@ -457,7 +472,9 @@ export class ToneApi implements INodeType {
 					);
 				} else if (operation === 'compare') {
 					const textA = this.getNodeParameter('textA', i) as string;
+					validateTextLength(textA, 'Text A', i, this);
 					const textB = this.getNodeParameter('textB', i) as string;
+					validateTextLength(textB, 'Text B', i, this);
 					responseData = await this.helpers.httpRequestWithAuthentication.call(
 						this,
 						'toneApi',
@@ -470,6 +487,7 @@ export class ToneApi implements INodeType {
 					);
 				} else if (operation === 'analyze') {
 					const text = this.getNodeParameter('text', i) as string;
+					validateTextLength(text, 'Text', i, this);
 					responseData = await this.helpers.httpRequestWithAuthentication.call(
 						this,
 						'toneApi',
@@ -482,6 +500,7 @@ export class ToneApi implements INodeType {
 					);
 				} else if (operation === 'detectEmotion') {
 					const text = this.getNodeParameter('text', i) as string;
+					validateTextLength(text, 'Text', i, this);
 					responseData = await this.helpers.httpRequestWithAuthentication.call(
 						this,
 						'toneApi',
@@ -494,6 +513,7 @@ export class ToneApi implements INodeType {
 					);
 				} else if (operation === 'rewrite') {
 					const text = this.getNodeParameter('text', i) as string;
+					validateTextLength(text, 'Text', i, this);
 					const targetTone = this.getNodeParameter('targetTone', i) as string;
 
 					const body: { text: string; target_tone?: string } = { text };
@@ -513,6 +533,7 @@ export class ToneApi implements INodeType {
 					);
 				} else if (operation === 'reply') {
 					const message = this.getNodeParameter('message', i) as string;
+					validateTextLength(message, 'Message', i, this);
 					const role = this.getNodeParameter('role', i) as string;
 					const replyTone = this.getNodeParameter('replyTone', i) as string;
 					const context = this.getNodeParameter('context', i) as string;

@@ -76,6 +76,12 @@ export class ToneApi implements INodeType {
 						action: 'Detect emotion in text',
 					},
 					{
+						name: 'Evaluate Response',
+						value: 'evaluate',
+						description: 'Score how well a response addresses a message (costs 3 credits)',
+						action: 'Evaluate response quality',
+					},
+					{
 						name: 'Reply',
 						value: 'reply',
 						description: 'Generate a reply to a message with a specific role and tone (costs 3 credits)',
@@ -269,6 +275,42 @@ export class ToneApi implements INodeType {
 				displayOptions: {
 					show: {
 						operation: ['audience'],
+					},
+				},
+			},
+			// Message — for evaluate endpoint
+			{
+				displayName: 'Message',
+				name: 'evaluateMessage',
+				type: 'string',
+				typeOptions: {
+					rows: 4,
+				},
+				default: '',
+				required: true,
+				placeholder: 'Enter the original message...',
+				description: 'The original message that was responded to (max 10,000 characters)',
+				displayOptions: {
+					show: {
+						operation: ['evaluate'],
+					},
+				},
+			},
+			// Response — for evaluate endpoint
+			{
+				displayName: 'Response',
+				name: 'evaluateResponse',
+				type: 'string',
+				typeOptions: {
+					rows: 4,
+				},
+				default: '',
+				required: true,
+				placeholder: 'Enter the response to evaluate...',
+				description: 'The response to score against the original message (max 10,000 characters)',
+				displayOptions: {
+					show: {
+						operation: ['evaluate'],
 					},
 				},
 			},
@@ -557,7 +599,22 @@ export class ToneApi implements INodeType {
 							json: true,
 						},
 					);
-				} else if (operation === 'getKeyInfo') {
+				} else if (operation === 'evaluate') {
+						const message = this.getNodeParameter('evaluateMessage', i) as string;
+						validateTextLength(message, 'Message', i, this);
+						const response = this.getNodeParameter('evaluateResponse', i) as string;
+						validateTextLength(response, 'Response', i, this);
+						responseData = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'toneApi',
+							{
+								method: 'POST',
+								url: `${baseUrl}/evaluate`,
+								body: { message, response },
+								json: true,
+							},
+						);
+					} else if (operation === 'getKeyInfo') {
 					responseData = await this.helpers.httpRequestWithAuthentication.call(
 						this,
 						'toneApi',

@@ -31,6 +31,7 @@ docker restart n8n
 |-----------|-------------|
 | **Analyze Tone** | Returns scores for rudeness, assertiveness, confidence, urgency, and vagueness |
 | **Detect Emotion** | Detects primary emotion (joy, anger, sadness, fear, surprise, disgust, neutral) with scores |
+| **Evaluate Response** | Scores how well a response addresses a message (relevance, completeness, empathy, clarity) |
 | **Rewrite** | Rewrites text in a professional or custom target tone |
 | **Get Key Info** | Returns remaining credits, total calls, and recent usage logs |
 

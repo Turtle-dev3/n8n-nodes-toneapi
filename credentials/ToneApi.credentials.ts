@@ -8,7 +8,7 @@ import {
 export class ToneApi implements ICredentialType {
 	name = 'toneApi';
 	displayName = 'Tone API';
-	documentationUrl = 'https://dashboard.bracherai.com/docs';
+	documentationUrl = 'https://toneai.dev/docs';
 
 	properties: INodeProperties[] = [
 		{
@@ -33,7 +33,7 @@ export class ToneApi implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: 'https://toneapi.bracherai.com',
+			baseURL: 'https://api.toneai.dev',
 			url: '/keys/me',
 		},
 	};

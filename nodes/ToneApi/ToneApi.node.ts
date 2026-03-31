@@ -414,7 +414,7 @@ export class ToneApi implements INodeType {
 		const returnData: INodeExecutionData[] = [];
 
 		const operation = this.getNodeParameter('operation', 0) as string;
-		const baseUrl = 'https://toneapi.bracherai.com';
+		const baseUrl = 'https://api.toneai.dev';
 
 		for (let i = 0; i < items.length; i++) {
 			try {

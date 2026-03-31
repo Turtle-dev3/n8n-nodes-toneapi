@@ -1,6 +1,6 @@
 # n8n-nodes-toneapi
 
-Community node for [n8n](https://n8n.io/) that integrates with the [Tone API](https://dashboard.bracherai.com/docs) — analyze tone, detect emotions, and rewrite text.
+Community node for [n8n](https://n8n.io/) that integrates with the [Tone API](https://toneai.dev/docs) — analyze tone, detect emotions, and rewrite text.
 
 ## Installation
 
@@ -21,7 +21,7 @@ docker restart n8n
 
 ## Setup
 
-1. Get an API key at [dashboard.bracherai.com](https://dashboard.bracherai.com)
+1. Get an API key at [dashboard.bracherai.com](https://toneai.dev)
 2. In n8n, add the **Tone API** node to a workflow
 3. Create credentials with your API key (starts with `tone_`)
 
@@ -36,8 +36,8 @@ docker restart n8n
 
 ## Resources
 
-- [API Documentation](https://dashboard.bracherai.com/docs)
-- [Get an API Key](https://dashboard.bracherai.com/register)
+- [API Documentation](https://toneai.dev/docs)
+- [Get an API Key](https://toneai.dev/register)
 
 ## License
 
